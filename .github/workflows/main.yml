@@ -68,7 +68,7 @@ jobs:
           file: ./Dockerfile
           tags: |
             ${{ vars.DOCKER_USERNAME }}/python-project:latest
-            ${{ vars.DOCKER_USERNAME }}/quiz-app:sha-${{ steps.tag-vars.outputs.short_sha }}
+            ${{ vars.DOCKER_USERNAME }}/python-project:sha-${{ steps.tag-vars.outputs.short_sha }}
 
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:sha-${{ steps.tag-vars.outputs.short_sha }}
