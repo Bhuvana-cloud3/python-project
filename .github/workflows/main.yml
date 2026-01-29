@@ -24,13 +24,7 @@ jobs:
           # install test runner if you plan to add/keep tests
           pip install pytest
 
-      # ------------------ DOCKER LOGIN (Docker Hub) ------------------
-      - name: docker log in
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-     
+      
       - name: Build package (sdist & wheel)
         run: |
           python -m build
@@ -43,7 +37,29 @@ jobs:
           name: Package
           path: staging
 
-      # ------------------ BUILD & PUSH IMAGE (MULTI-REGISTRY) ------------------
+         # ------------------ DOCKER LOGIN (Docker Hub) ------------------
+      - name: docker log in
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+         # ------------------ DOCKER LOGIN (GHCR) ------------------
+      - name: Docker login (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+          # ------------------ IMAGE TAG METADATA ------------------
+ 
+      - name: Get short commit SHA
+        id: tag-vars
+        run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT  
+     
+
+          # ------------------ BUILD & PUSH IMAGE (MULTI-REGISTRY) ------------------
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -52,4 +68,7 @@ jobs:
           file: ./Dockerfile
           tags: |
             ${{ vars.DOCKER_USERNAME }}/python-project:latest
-           
+            ${{ vars.DOCKER_USERNAME }}/quiz-app:sha-${{ steps.tag-vars.outputs.short_sha }}
+
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:sha-${{ steps.tag-vars.outputs.short_sha }}
