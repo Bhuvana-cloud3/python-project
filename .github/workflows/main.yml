@@ -37,35 +37,15 @@ jobs:
           name: Package
           path: staging
 
-         # ------------------ DOCKER LOGIN (Docker Hub) ------------------
-      - name: docker log in
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-         # ------------------ DOCKER LOGIN (GHCR) ------------------
-      - name: Docker login (GHCR)
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
          # ------------------ DOCKER LOGIN (AZURE) ------------------  
       - name: Docker login (Azure)
         uses: docker/login-action@v3
         with:
-          registry: bhuvana125.azurecr.io
+          registry: bhuvanaregistry.azurecr.io
           username: ${{ vars.AZURE_CLIENT_ID }}
           password: ${{ secrets.AZURE_CLIENT_SECRET }}    
   
-          # ------------------ IMAGE TAG METADATA ------------------
- 
-      - name: Get short commit SHA
-        id: tag-vars
-        run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT  
-     
 
           # ------------------ BUILD & PUSH IMAGE (MULTI-REGISTRY) ------------------
       - name: Build and push Docker image
@@ -75,11 +55,6 @@ jobs:
           push: true
           file: ./Dockerfile
           tags: |
-            ${{ vars.DOCKER_USERNAME }}/python-project:latest
-            ${{ vars.DOCKER_USERNAME }}/python-project:sha-${{ steps.tag-vars.outputs.short_sha }}
-
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:sha-${{ steps.tag-vars.outputs.short_sha }}
 
             ${{ vars.AZURE_ACR_NAME }}.azurecr.io/python-project:latest
             ${{ vars.AZURE_ACR_NAME }}.azurecr.io/python-project:sha-${{ steps.tag-vars.outputs.short_sha }}
