@@ -25,6 +25,7 @@ jobs:
           pip install pytest
 
       
+      
       - name: Build package (sdist & wheel)
         run: |
           python -m build
@@ -36,7 +37,28 @@ jobs:
         with:
           name: Package
           path: staging
-
+      - name: Setup java
+        uses: actions/setup-java@v5.2.0
+        with:
+         distribution: 'temurin'
+         java-version: '17'
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v2
+        with:
+         args: >
+          -Dsonar.projectKey=bhuvana-cloud333_python-project
+          -Dsonar.organization=bhuvana-cloud333
+          -Dsonar.sources=src
+        env:
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         SONAR_HOST_URL: https://sonarcloud.io/account/security
+ 
+      - name: SonarQube Quality Gate Check
+        uses: SonarSource/sonarqube-quality-gate-action@v1.2.0
+        timeout-minutes: 5
+        env:
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+ 
 
          # ------------------ DOCKER LOGIN (AZURE) ------------------  
       - name: Docker login (Azure)
