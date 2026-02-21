@@ -51,7 +51,7 @@ jobs:
           -Dsonar.sources=src
         env:
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-         SONAR_HOST_URL: https://sonarcloud.io/account/security
+         SONAR_HOST_URL: https://sonarcloud.io
  
       - name: SonarQube Quality Gate Check
         uses: SonarSource/sonarqube-quality-gate-action@v1.2.0
