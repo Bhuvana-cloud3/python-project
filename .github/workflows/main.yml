@@ -23,8 +23,6 @@ jobs:
           pip install build
           # install test runner if you plan to add/keep tests
           pip install pytest
-
-      
       
       - name: Build package (sdist & wheel)
         run: |
@@ -37,6 +35,8 @@ jobs:
         with:
           name: Package
           path: staging
+
+  # ------------------ sonarqube integration ------------------          
       - name: Setup java
         uses: actions/setup-java@v5.2.0
         with:
@@ -79,4 +79,4 @@ jobs:
           tags: |
 
             ${{ vars.AZURE_ACR_NAME }}.azurecr.io/python-project:latest
-            ${{ vars.AZURE_ACR_NAME }}.azurecr.io/python-project:sha-${{ steps.tag-vars.outputs.short_sha }}
+            
